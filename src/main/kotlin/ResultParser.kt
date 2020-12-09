@@ -55,7 +55,7 @@ data class Retry(
 
 object ResultParser {
 
-    fun parseResults(projectRoot: File): TestRunResult =
+    suspend fun parseResults(projectRoot: File): TestRunResult =
         TestRunResult(("""find . -iregex ^.*/test[DebugUnitTest]*/TEST\-[a-zA-Z0-9\.\-\_]+\.xml$"""
             .runCommand(projectRoot).run { (stdOutput.reader().readText()) })
             .split("\n").mapNotNull {
@@ -67,7 +67,7 @@ object ResultParser {
         val content = file.readText()
 
         val testSuiteRegex =
-            """<testsuite name="([a-zA-Z0-9.\-_]+)" tests="(\d+)" skipped="(\d+)" failures="(\d+)" errors="(\d+)" timestamp="([0-9\-:T]+)" hostname="([a-zA-Z0-9]+)" time="([0-9.]+)">\n\W+<properties/>""".toRegex()
+            """<testsuite name="([a-zA-Z0-9.\-_]+)" tests="(\d+)" skipped="(\d+)" failures="(\d+)" errors="(\d+)" timestamp="([0-9\-:T]+)" hostname="([a-zA-Z0-9\-]+)" time="([0-9.]+)">\n\W+<properties/>""".toRegex()
         var testSuiteResult = testSuiteRegex.find(content)?.groupValues?.run {
             TestSuiteResult(
                 packageName = get(1),

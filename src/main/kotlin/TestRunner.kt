@@ -21,7 +21,7 @@ class TestRunner(
         }
     }
 
-    private fun copyProject(id: Int): File {
+    private suspend fun copyProject(id: Int): File {
         val folder = File("/tmp/flakynessTest$id")
         if (folder.exists()) folder.deleteRecursively()
         folder.mkdirs()
@@ -34,12 +34,12 @@ class TestRunner(
         return folder
     }
 
-    private fun File.deleteTemporaryFiles() {
+    private suspend fun File.deleteTemporaryFiles() {
         "find . -iregex ^.*/build\$".runCommand(this).run { stdOutput.reader().readText() }.split("./")
             .forEach { File(it).deleteRecursively() }
     }
 
-    private fun File.runTests(command: String): TestRunResult {
+    private suspend fun File.runTests(command: String): TestRunResult {
         command.runCommand(this)
         return ResultParser.parseResults(this)
     }

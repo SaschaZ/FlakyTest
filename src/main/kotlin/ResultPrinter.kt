@@ -1,11 +1,8 @@
 import com.googlecode.lanterna.TextColor
 import com.googlecode.lanterna.TextColor.ANSI.*
 import dev.zieger.utils.coroutines.channel.forEach
-import dev.zieger.utils.gui.console.LanternaConsole
+import dev.zieger.utils.gui.console.*
 import dev.zieger.utils.gui.console.LanternaConsole.Companion.outnl
-import dev.zieger.utils.gui.console.TextWithColor
-import dev.zieger.utils.gui.console.invoke
-import dev.zieger.utils.gui.console.scope
 import dev.zieger.utils.misc.format
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -36,15 +33,19 @@ class ResultPrinter(
         }
         LanternaConsole(hideCommandInput = true, cs = scope).scope {
             outnl(
-                BLUE_BRIGHT("test flakyness with "), CYAN("$jobs"),
+                BLUE_BRIGHT("test flakyness with "), CYAN("$jobs "),
                 BLUE_BRIGHT(if (jobs > 1) "parallel jobs" else "job")
             )
-            outnl(WHITE(" "))
-            outnl(WHITE(" "))
+            outnl(" ")
+            outnl("\n\n\n" * SysInfo().toList())
 
             fun summary() = "$numFailedRuns of $numRuns runs failed (${failedRunsPercent.format(1)}%)"
-            fun colorIdx() = if (numFailedRuns == 0) 0 else 1
-            outnl(CYAN("runs/failed: "), *(GREEN + RED)(::colorIdx, ::summary))
+            fun color() = when {
+                numFailedRuns > 0 -> RED
+                numRuns > 0 && numTests == 0 -> YELLOW
+                else -> GREEN
+            }
+            outnl(TextWithColor({ summary() }, { color() }, { BLACK }))
         }
     }
 
@@ -59,7 +60,7 @@ class ResultPrinter(
 
         result.suites.forEach {
             it.failure.forEach { failure ->
-                outnl(failure.message, offset = 2)
+                outnl("${failure.origin} -> ${failure.message}", offset = 1)
             }
         }
     }
