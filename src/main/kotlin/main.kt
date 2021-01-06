@@ -43,6 +43,7 @@ private suspend fun Any.buildScopes(): Pair<IoCoroutineScope, DefaultCoroutineSc
 fun main(args: Array<String>) = runBlocking {
     val (ioScope, defScope) = buildScopes()
     Parameter(args).apply {
-        TestRunner(ioScope, root).run(jobs, command, ResultPrinter(defScope, jobs)::print).joinAll()
+        val resultPrinter = ResultPrinter(defScope, jobs)
+        TestRunner(ioScope, root).run(jobs, command, resultPrinter::print).joinAll()
     }
 }.asUnit()

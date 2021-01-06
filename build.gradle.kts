@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.21"
     application
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.2")
     implementation("dev.zieger.utils:core:2.3.0")
     implementation("dev.zieger.utils:jdk:2.3.0")
     implementation("org.apache.commons:commons-lang3:3.10")
@@ -48,7 +48,7 @@ tasks.named<ShadowJar>("shadowJar") {
     manifest {
         attributes(mapOf("Main-Class" to "MainKt"))
     }
-    destinationDirectory.set(File("/home/user/Dokumente"))
+    destinationDirectory.set(rootDir)
 }
 
 application {
